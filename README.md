@@ -8,7 +8,7 @@ This repository contains an end-to-end research notebook for a side-by-side comp
 
 The notebook uses Fortitudo's open-source implementation (`fortitudo.tech`) to demonstrate the methodology, run controlled simulations and evaluate portfolio implications across multiple market regimes.
 
-Third-party dependency (GPL-3.0): this notebook imports `fortitudo.tech` (GPL-3.0). All notebook code, simulation design and analysis are my own. The package is used strictly as a dependency to implement EP mechanics.
+Third-party dependency (GPL-3.0): this notebook imports `fortitudo.tech` (GPL-3.0). All notebook code, simulation design and analysis are unrelated to Fortitudo. The package is used strictly as a dependency to implement EP mechanics.
 
 ---
 
