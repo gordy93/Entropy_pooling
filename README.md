@@ -1,10 +1,10 @@
 # Entropy Pooling vs Sequential Entropy Pooling (H1)
-Simulation study and Portfolio Backtests
+Simulation study and portfolio backtests.
 
 This repository contains an end-to-end research notebook for a side-by-side comparison of:
 
-- Entropy pooling (EP), (Meucci, 2008)
-- Sequential entropy pooling (SeqEP) (H1), (Vorobets, 2021)
+- Entropy pooling (EP), (Meucci, 2008).
+- Sequential entropy pooling (SeqEP) (H1), (Vorobets, 2021).
 
 The notebook uses Fortitudo's open-source implementation (`fortitudo.tech`) to demonstrate the methodology, run controlled simulations and evaluate portfolio implications across multiple market regimes.
 
@@ -25,7 +25,7 @@ Runs EP and SeqEP under 5 return regimes with 4 assets and evaluates:
 ### 2) Portfolio simulation
 Builds naive long-only tilt portfolios using posterior expected returns and backtests:
 
-- EP portfolios vs SeqEP portfolios vs equal-weighted Buy & Hold benchmark.
+- EP portfolios vs SeqEP portfolios vs equal-weighted Buy & Hold (B&H) benchmark.
 - Daily, weekly and monthly rebalancing.
 - Transaction costs.
 
@@ -36,100 +36,95 @@ Implements a Bayesian update to dynamically adjust the confidence weight _c_t_ b
 
 ## Core concepts and equations
 
-### Entropy Pooling (EP)
+### EP
 EP constructs posterior scenario probabilities q by minimizing KL divergence to a prior probability vector p, while enforcing views:
 
-q* = argmin_q sum_{s=1..S} q_s * log(q_s / p_s)
+`q* = argmin_q sum_{s=1..S} q_s * log(q_s / p_s)`
 
 Subject to:
-- simplex constraint: sum_s q_s = 1, q_s >= 0
-- equality views: A q = b
-- inequality views: G q <= h
+- Simplex constraint: sum_s q_s = 1, q_s >= 0
+- Equality views: A q = b
+- Inequality views: G q <= h
 
-### Sequential Entropy Pooling (H1)
-SeqEP (H1) applies constraints in stages (e.g., C0 then C1) instead of all at once. This can reduce unnecessary distortion when views interact.
+### SeqEP 
+SeqEP applies constraints in stages (e.g., C0 then C1).
 
-### Confidence blending ("confidence-posterior")
-For a given confidence level c in [0, 1], the notebook blends the prior and full posterior weights:
+### Opinion pooling ("confidence-posterior") (Meucci, 2006)
+If practitioners are less confident in their views, posterior distribution of the factors must shrink towards the reference factor distribution. For a given confidence level _c_ in [0, 1]:
 
-q(c) = (1 - c) p + c q_full
+`q(c) = (1 - c) p + c q_full`
 
-This provides a controlled way to test robustness to partial trust in the views.
+With the pooling parameter _c_ being the confidence level in the views.
 
-### Information cost and robustness metrics
+### Method comparison metrics
 
-Relative entropy (RE):
-RE(q||p) = sum_{s=1..S} q_s * log(q_s / p_s)
+RE:
+`RE(q||p) = sum_{s=1..S} q_s * log(q_s / p_s)`
 
-Effective number of scenarios (ENS):
-ENS = exp(-RE)
-
-(ENS is typically reported as a percentage relative to S.)
+ENS:
+`ENS = exp(-RE)`
 
 ---
 
-## Return regime simulator (4 assets)
+## Return regime simulator 
 
 The notebook simulates returns using:
-- a base mean vector mu and volatility vector sigma
-- a fixed correlation structure
-- regime-dependent shock generation (Gaussian and non-Gaussian variants)
+- A base mean vector mu and volatility vector sigma.
+- A fixed correlation structure.
+- Regime-dependent shock generations.
 
-Non-Gaussian regimes are implemented via a mixture:
-- with probability p_crash, draw from a crash shock distribution (shifted mean, higher variance)
-- otherwise draw from the base shock distribution
+Specifically, crashes are simulated by:
+- Probability _p_crash_, draw from a crash shock distribution.
 
 ---
 
-## Views used in the notebook (example)
+## Views used in the notebook (set as example only)
 
-Rank views are applied, for example:
+Rank views are applied:
 
-E[R1] >= E[R2]
-E[R3] <= E[R4]
+`E[R1] >= E[R2]
+E[R3] <= E[R4]`
 
-Expressed as inequality moment constraints for EP:
+Expressed as inequality moment constraints:
 
-E[R2 - R1] <= 0
-E[R3 - R4] <= 0
+`E[R2 - R1] <= 0
+E[R3 - R4] <= 0`
 
 ---
 
 ## Portfolio construction
 
 ### Naive tilt allocation
-Posterior expected returns are converted into long-only weights:
-
-w_i proportional to max(mu_i, 0), and sum_i w_i = 1
+Posterior expected returns are converted into long-only weights.
 
 ### Rebalancing and transaction costs
-At each rebalancing date, turnover is:
+At each rebalancing date, turnover is calculated as:
 
-turnover = sum_i |w_i_target - w_i_current|
+`turnover = sum_i |w_i_target - w_i_current|`
 
 Transaction cost is modeled as:
 
-cost = 0.0005 * turnover
+`cost = 0.0005 * turnover`
 
 ---
 
-## Bayesian updating of confidence (dynamic c_t)
+## Bayesian updating of confidence (dynamic _c_t_)
 
-At each rebalance, the notebook can update the confidence weight c_t using the likelihood of recent returns under:
-- a prior model (mu_p, Sigma_p)
-- a posterior model (mu_q, Sigma_q)
+At each rebalance, the notebook can update the confidence weight _c_t_ with:
+- A prior model (mu_p, Sigma_p).
+- A posterior model (mu_q, Sigma_q).
 
-Let E be the recent return block (chunk). Define:
+Let E be the recent return, define:
 
-P(E|H) proportional to exp(ll_q)
-P(E|not H) proportional to exp(ll_p)
+`P(E|H) proportional to exp(ll_q)
+P(E|not H) proportional to exp(ll_p)`
 
 Then Bayes' rule updates:
 
-c_t = P(H|E)
-    = (P(E|H) c_t) / (P(E|H) c_t + P(E|not H) (1 - c_t))
+`c_t = P(H|E)
+    = (P(E|H) c_t) / (P(E|H) c_t + P(E|not H) (1 - c_t))`
 
-A forgetting factor is used to prevent overreaction and to revert partially toward the initial confidence c0.
+A forgetting factor is used to prevent overreaction and to revert partially toward the initial confidence.
 
 ---
 
@@ -138,28 +133,18 @@ A forgetting factor is used to prevent overreaction and to revert partially towa
 Open and run:
 - `Entropy_pooling_comparison.ipynb`
 
-Typical dependencies:
-- Python 3.9+
-- numpy, pandas, scipy, matplotlib, seaborn, tqdm
-- fortitudo.tech
-
 ---
 
 ## Outputs
 
-- Regime-by-regime plots of RE vs confidence and ENS vs confidence
-- Portfolio equity curves for EP / SeqEP / benchmark across rebalancing frequencies
-- Performance tables (annualized return, Sharpe, Sortino, drawdown, turnover, skew, kurtosis)
+- Regime-by-regime plots of RE and ENS.
+- Portfolio equity curves for EP, SeqEP, B&H across rebalancing frequencies and confidence-posterior.
+- Performance tables.
 
 ---
 
 ## License / attribution
 
-- All notebook code and analysis in this repository are my own.
-- This project uses `fortitudo.tech` as an external dependency, which is licensed under GPL-3.0.
-
-## Third-party dependency (GPL-3.0)
-
 This notebook uses the `fortitudo.tech` package (GPL-3.0) as a third-party dependency.  
-All notebook code in this repository is my own; the package is only imported to illustrate its capabilities and my implementation skills.  
+All notebook code in this repository are not related to Fortitudo; the package is only imported to illustrate its capabilities and its potential implementation.  
 For the license terms, see the `fortitudo.tech` project’s GPL-3.0 license.
