@@ -37,7 +37,7 @@ Implements a Bayesian update to dynamically adjust the confidence weight _c_t_ b
 ## Core concepts and equations
 
 ### EP
-EP constructs posterior scenario probabilities q by minimizing KL divergence to a prior probability vector p, while enforcing views:
+EP constructs posterior scenario probabilities _q_ by minimizing KL divergence to a prior probability vector _p_, while enforcing views:
 
 `q* = argmin_q sum_{s=1..S} q_s * log(q_s / p_s)`
 
