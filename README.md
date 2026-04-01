@@ -1,38 +1,36 @@
-# Entropy_pooling
-
 # Entropy Pooling vs Sequential Entropy Pooling (H1)
-Simulation Study, Information Costs, and Portfolio Backtests
+Simulation study and Portfolio Backtests
 
-This repository contains my end-to-end research notebook for a side-by-side comparison of:
+This repository contains an end-to-end research notebook for a side-by-side comparison of:
 
-- Entropy Pooling (EP)
-- Sequential Entropy Pooling (SeqEP), heuristic H1
+- Entropy pooling (EP), (Meucci, 2008)
+- Sequential entropy pooling (SeqEP) (H1), (Vorobets, 2021)
 
-The notebook uses Fortitudo's open-source implementation (`fortitudo.tech`) to demonstrate the methodology, run controlled simulations, and evaluate portfolio implications across multiple market regimes.
+The notebook uses Fortitudo's open-source implementation (`fortitudo.tech`) to demonstrate the methodology, run controlled simulations and evaluate portfolio implications across multiple market regimes.
 
-Third-party dependency (GPL-3.0): this notebook imports `fortitudo.tech` (GPL-3.0). All notebook code, simulation design, and analysis are my own. The package is used strictly as a dependency to implement EP mechanics.
+Third-party dependency (GPL-3.0): this notebook imports `fortitudo.tech` (GPL-3.0). All notebook code, simulation design and analysis are my own. The package is used strictly as a dependency to implement EP mechanics.
 
 ---
 
 ## What this project does
 
 ### 1) Simulation study (EP vs SeqEP)
-Runs EP and SeqEP under 5 return regimes with 4 assets, and evaluates:
+Runs EP and SeqEP under 5 return regimes with 4 assets and evaluates:
 
-- Relative Entropy (RE) as an information cost / distortion measure
-- Effective Number of Scenarios (ENS) as a concentration/robustness proxy
-- Sensitivity to view confidence c in {1.00, 0.75, 0.50, 0.25}
-- Robustness via Monte Carlo regime sampling
+- Relative entropy (RE) as a distortion measure.
+- Effective number of scenarios (ENS). 
+- Sensitivity to confidence-posterior _c_ in {1.00, 0.75, 0.50, 0.25}.
+- Robustness via Monte Carlo random regime sampling.
 
 ### 2) Portfolio simulation
 Builds naive long-only tilt portfolios using posterior expected returns and backtests:
 
-- EP portfolio vs SeqEP portfolio vs Buy & Hold benchmark
-- Daily / Weekly / Monthly rebalancing
-- Transaction costs (5 bps per unit turnover)
+- EP portfolios vs SeqEP portfolios vs equal-weighted Buy & Hold benchmark.
+- Daily, weekly and monthly rebalancing.
+- Transaction costs.
 
-### 3) Bayesian updating of confidence (optional extension)
-Implements a Bayesian update to dynamically adjust the confidence weight c_t based on how well recent realized returns match the "prior" vs "posterior" model.
+### 3) Bayesian updating of confidence (extension)
+Implements a Bayesian update to dynamically adjust the confidence weight _c_t_ based on how well recent realised returns match the "prior" vs "posterior" model.
 
 ---
 
